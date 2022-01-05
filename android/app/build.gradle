@@ -47,6 +47,10 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
     }
 
+    // uncomment these so flutter_launcher_icons can do its thing
+    // targetSdkVersion    = 29
+    // minSdkVersion       = 23
+
     defaultConfig {
         applicationId "xyz.starshines.pk_switcher"
         minSdkVersion flutter.minSdkVersion
