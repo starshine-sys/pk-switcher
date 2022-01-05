@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pk_switcher/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'pluralkit.dart';
@@ -15,6 +16,7 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   late bool _showImages;
   late bool _showHidden;
+  late bool _darkTheme;
   late String _token;
 
   var _validToken = true;
@@ -27,6 +29,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     super.initState();
     _showImages = widget.prefs.getBool('showImages') ?? true;
     _showHidden = widget.prefs.getBool('showHidden') ?? true;
+    _darkTheme = widget.prefs.getBool('darkTheme') ?? false;
     _token = widget.prefs.getString('token')!;
     _tokenController.text = _token;
   }
@@ -45,7 +48,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         children: [
           SwitchListTile(
             value: _showImages,
-            onChanged: (value) async {
+            onChanged: (value) {
               setState(() {
                 _hasChangedSettings = true;
                 _showImages = value;
@@ -58,8 +61,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const Divider(),
           SwitchListTile(
             value: _showHidden,
-            onChanged: (value) async {
-              await widget.prefs.setBool('showHidden', value);
+            onChanged: (value) {
               setState(() {
                 _hasChangedSettings = true;
                 _showHidden = value;
@@ -68,6 +70,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: const Text('Show private members'),
             subtitle: const Text(
                 "Whether to show private members in the full member list"),
+          ),
+          const Divider(),
+          const Padding(
+              padding: EdgeInsets.all(4),
+              child: Text(
+                'Theme',
+                style: TextStyle(fontSize: 16),
+              )),
+          RadioListTile<bool>(
+            value: false,
+            groupValue: _darkTheme,
+            onChanged: (_) {
+              setState(() {
+                _hasChangedSettings = true;
+                _darkTheme = false;
+              });
+            },
+            title: const Text('Light'),
+          ),
+          RadioListTile<bool>(
+            value: true,
+            groupValue: _darkTheme,
+            onChanged: (_) {
+              setState(() {
+                _hasChangedSettings = true;
+                _darkTheme = true;
+              });
+            },
+            title: const Text('Dark'),
           ),
           const Divider(),
           TextField(
@@ -95,8 +126,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await widget.prefs.setBool('showHidden', _showHidden);
     await widget.prefs.setBool('showImages', _showImages);
     await widget.prefs.setString('token', _token);
+    await widget.prefs.setBool('darkTheme', _darkTheme);
 
     setState(() => _hasChangedSettings = false);
+
+    PKSwitcher.of(context)?.changeTheme(_darkTheme);
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Saved settings!')),

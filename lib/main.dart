@@ -19,35 +19,43 @@ class PKSwitcher extends StatefulWidget {
 
   const PKSwitcher({Key? key, required this.prefs}) : super(key: key);
 
+  static _PKSwitcherState? of(BuildContext context) =>
+      context.findAncestorStateOfType<_PKSwitcherState>();
+
   @override
   _PKSwitcherState createState() => _PKSwitcherState();
 }
 
 class _PKSwitcherState extends State<PKSwitcher> {
   var _hadNoToken = false;
+  var _darkTheme = false;
 
   void _exitWelcome() => setState(() {
         _hadNoToken = false;
       });
 
+  void changeTheme(bool darkTheme) {
+    setState(() {
+      _darkTheme = darkTheme;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final hasToken = widget.prefs.getString('token') != null;
+    _darkTheme = widget.prefs.getBool('darkTheme') ?? false;
 
     Widget root = DefaultTabController(
       length: 4,
       initialIndex: hasToken ? 0 : 3,
       child: Scaffold(
         bottomNavigationBar: Container(
-          color: Colors.white,
-          child: const TabBar(
-            labelColor: Colors.black,
-            indicatorColor: Colors.black,
-            tabs: [
-              Tab(
-                icon: Icon(Icons.account_circle),
-                text: 'Fronters',
-              ),
+          color: _darkTheme ? Colors.black : Colors.white,
+          child: TabBar(
+            labelColor: _darkTheme ? Colors.white : Colors.black,
+            indicatorColor: _darkTheme ? Colors.white : Colors.black,
+            tabs: const [
+              Tab(icon: Icon(Icons.account_circle), text: 'Fronters'),
               Tab(icon: Icon(Icons.list), text: 'Members'),
               Tab(icon: Icon(Icons.history), text: 'History'),
               Tab(icon: Icon(Icons.settings), text: 'Settings'),
@@ -87,6 +95,15 @@ class _PKSwitcherState extends State<PKSwitcher> {
             foregroundColor: Colors.black,
           ),
         ),
+        darkTheme: ThemeData(
+          brightness: Brightness.dark,
+          primarySwatch: Colors.grey,
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.black,
+            foregroundColor: Colors.white,
+          ),
+        ),
+        themeMode: _darkTheme ? ThemeMode.dark : ThemeMode.light,
         home: root);
   }
 }
