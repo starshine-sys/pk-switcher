@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'main_view.dart';
 import 'member_view.dart';
 import 'settings_view.dart';
+import 'switch_view.dart';
 
 import 'pluralkit.dart';
 
@@ -69,7 +70,7 @@ class _PKSwitcherState extends State<PKSwitcher> {
           children: [
             CurrentFronterPage(prefs: widget.prefs),
             MemberList(prefs: widget.prefs),
-            const Icon(Icons.history),
+            SwitchList(prefs: widget.prefs),
             SettingsScreen(prefs: widget.prefs),
           ],
         ),

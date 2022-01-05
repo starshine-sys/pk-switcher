@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:json_annotation/json_annotation.dart';
+import 'package:intl/intl.dart';
 
 part 'pluralkit.g.dart';
 
@@ -171,22 +172,47 @@ Future<Front?> getFronters(String token) async {
   return Front.fromJson(body);
 }
 
-Future<List<Switch>?> getLatestSwitches(String token) async {
+final format = DateFormat('yyyy-mm-ddTHH:mm:ss.SZ');
+
+Stream<List<Switch>> getAllSwitches(String token) async* {
   final resp = await http.get(
       Uri.parse("https://api.pluralkit.me/v2/systems/@me/switches"),
       headers: {
         'Authorization': token,
       });
 
-  if (resp.statusCode < 200 || resp.statusCode >= 400) {
-    return null;
+  if (resp.statusCode >= 200 && resp.statusCode < 400) {
+    var switches = (jsonDecode(resp.body) as List<dynamic>)
+        .map((e) => Switch.fromJson(e as Map<String, dynamic>))
+        .toList();
+
+    yield switches;
+
+    var count = switches.length;
+    while (count == 100) {
+      final ts = switches.last.timestamp;
+      final urlTs =
+          '${ts.year.toString().padLeft(4, "0")}-${ts.month.toString().padLeft(2, "0")}-${ts.day.toString().padLeft(2, "0")}T${ts.hour.toString().padLeft(2, "0")}:${ts.minute.toString().padLeft(2, "0")}:${ts.second.toString().padLeft(2, "0")}.${ts.millisecond.toString().padLeft(3, "0")}Z';
+
+      final resp = await http.get(
+          Uri.parse(
+              "https://api.pluralkit.me/v2/systems/@me/switches?before=$urlTs"),
+          headers: {
+            'Authorization': token,
+          });
+
+      if (resp.statusCode < 200 || resp.statusCode >= 400) {
+        break;
+      }
+
+      switches = (jsonDecode(resp.body) as List<dynamic>)
+          .map((e) => Switch.fromJson(e as Map<String, dynamic>))
+          .toList();
+
+      count = switches.length;
+      yield switches;
+    }
   }
-
-  final body = jsonDecode(resp.body);
-
-  return (body as List<dynamic>)
-      .map((e) => Switch.fromJson(e as Map<String, dynamic>))
-      .toList();
 }
 
 Future<Front?> createSwitch(String token, List<String> members) async {
@@ -207,6 +233,15 @@ Future<Front?> createSwitch(String token, List<String> members) async {
 
   final body = jsonDecode(resp.body);
   return Front.fromJson(body);
+}
+
+Future<void> deleteSwitch(String token, String id) async {
+  await http.delete(
+    Uri.parse("https://api.pluralkit.me/v2/systems/@me/switches/$id"),
+    headers: {
+      'Authorization': token,
+    },
+  );
 }
 
 // Flutter functions

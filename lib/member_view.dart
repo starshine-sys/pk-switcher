@@ -41,29 +41,30 @@ class _MemberListState extends State<MemberList> {
 
     list.sort((a, b) => a.name.compareTo(b.name));
 
-    final tiles = <Widget>[];
-    for (final member in list) {
-      if (member.privacy?.visibility == 'private') {
-        if (!showHidden) continue;
-      }
-
-      tiles.add(member.buildMemberCard(
-        showImage: showImages,
-        inList: _toSwitchIn.contains(member),
-        tapAction: () {
-          setState(() {
-            if (_toSwitchIn.contains(member)) {
-              _toSwitchIn.remove(member);
-            } else {
-              _toSwitchIn.add(member);
-            }
-          });
-        },
-      ));
+    var members = list;
+    if (!showHidden) {
+      members = list
+          .where((element) => element.privacy?.visibility != 'private')
+          .toList();
     }
 
-    return ListView(
-      children: tiles,
+    return ListView.builder(
+      itemCount: members.length,
+      itemBuilder: (context, index) {
+        return members[index].buildMemberCard(
+          showImage: showImages,
+          inList: _toSwitchIn.contains(members[index]),
+          tapAction: () {
+            setState(() {
+              if (_toSwitchIn.contains(members[index])) {
+                _toSwitchIn.remove(members[index]);
+              } else {
+                _toSwitchIn.add(members[index]);
+              }
+            });
+          },
+        );
+      },
     );
   }
 
@@ -139,10 +140,10 @@ class _MemberListState extends State<MemberList> {
                 onPressed: () {
                   setState(() {
                     _toSwitchIn.clear();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Deselected all members')),
-                    );
                   });
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Deselected all members')),
+                  );
                 },
                 child: const Icon(Icons.restore),
                 tooltip: 'Deselect all',

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:duration/duration.dart';
+import 'package:intl/intl.dart';
 
 import 'pluralkit.dart';
 
@@ -14,6 +15,8 @@ class CurrentFronterPage extends StatefulWidget {
 }
 
 class _CurrentFronterPageState extends State<CurrentFronterPage> {
+  static final tsFormat = DateFormat.yMMMMEEEEd().add_jms();
+
   late Future<Front?> _future;
 
   Widget _buildFrontList(Front front) {
@@ -33,7 +36,7 @@ class _CurrentFronterPageState extends State<CurrentFronterPage> {
           ListTile(
             title: Center(
               child: Text(
-                  'Since ${front.timestamp}\n(${prettyDuration(duration)} ago)'),
+                  'Since ${tsFormat.format(front.timestamp.toLocal())}\n(${prettyDuration(duration)} ago)'),
             ),
           ),
         ],
@@ -46,7 +49,7 @@ class _CurrentFronterPageState extends State<CurrentFronterPage> {
         contentPadding: const EdgeInsets.only(bottom: 10),
         title: Center(
           child: Text(
-              'Since ${front.timestamp}\n(${prettyDuration(duration)} ago)'),
+              'Since ${tsFormat.format(front.timestamp.toLocal())}\n(${prettyDuration(duration)} ago)'),
         ),
       ),
     );

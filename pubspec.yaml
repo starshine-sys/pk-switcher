@@ -40,6 +40,7 @@ dependencies:
   provider: ^6.0.2
   shared_preferences: ^2.0.11
   duration: ^3.0.8
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:
