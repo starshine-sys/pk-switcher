@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:pk_switcher/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'pluralkit.dart';
+
+const _repo = 'https://github.com/starshine-sys/pk-switcher/';
+const _license =
+    'https://github.com/starshine-sys/pk-switcher/blob/main/LICENSE';
 
 class SettingsScreen extends StatefulWidget {
   final SharedPreferences prefs;
@@ -109,6 +114,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
             controller: _tokenController,
             onSubmitted: (token) async => _onTokenSubmit(context, token),
           ),
+          const Divider(),
+          ListTile(
+            title: const Text('About'),
+            onTap: () => _aboutScreen(context),
+            leading: const Icon(Icons.info),
+          )
         ],
       ),
       floatingActionButton: (_hasChangedSettings && _validToken)
@@ -169,5 +180,41 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _validToken = true;
       _token = token;
     });
+  }
+
+  void _aboutScreen(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('About'),
+            ),
+            body: ListView(
+              padding: const EdgeInsets.all(8),
+              children: [
+                const ListTile(
+                  title: Text('Version'),
+                  subtitle: Text('0.3.0'),
+                ),
+                const Divider(),
+                ListTile(
+                  title: const Text('Repository'),
+                  subtitle: const Text('github.com/starshine-sys/pk-switcher'),
+                  onTap: () async => await launch(_repo),
+                ),
+                const Divider(),
+                ListTile(
+                  title: const Text('License'),
+                  subtitle: const Text(
+                      'GNU General Public License, version 3 or later'),
+                  onTap: () async => await launch(_license),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
   }
 }

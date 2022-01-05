@@ -46,7 +46,7 @@ class _SwitchListState extends State<SwitchList> {
             children: [
               ListTile(
                 title: const Text('Details'),
-                leading: const Icon(Icons.description),
+                leading: const Icon(Icons.info),
                 onTap: () => Navigator.pop(context, SwitchOptions.showInfo),
               ),
               ListTile(
