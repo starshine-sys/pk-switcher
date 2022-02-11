@@ -291,6 +291,9 @@ class _SwitchListState extends State<SwitchList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Switches'),
+      ),
       body: FutureBuilder<List<pk.Member>?>(
         future: _future,
         builder: (context, snapshot) {

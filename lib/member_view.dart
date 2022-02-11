@@ -18,6 +18,8 @@ class MemberList extends StatefulWidget {
 class _MemberListState extends State<MemberList> {
   late Future<List<Member>?> _future;
   final _toSwitchIn = <Member>{};
+  var _searchTerm = "";
+  var _typing = false;
 
   @override
   void initState() {
@@ -42,9 +44,18 @@ class _MemberListState extends State<MemberList> {
     list.sort((a, b) => a.name.compareTo(b.name));
 
     var members = list;
-    if (!showHidden) {
+    // only filter hidden members if nothing is being searched for
+    if (!showHidden && _searchTerm == "") {
       members = list
           .where((element) => element.privacy?.visibility != 'private')
+          .toList();
+    }
+
+    if (_searchTerm != "") {
+      final searchTerm = _searchTerm.toLowerCase();
+
+      members = members
+          .where((element) => element.name.toLowerCase().contains(searchTerm))
           .toList();
     }
 
@@ -175,8 +186,39 @@ class _MemberListState extends State<MemberList> {
             icon: const Icon(Icons.exit_to_app),
           );
 
+    final title = _typing
+        ? TextField(
+            decoration: const InputDecoration(
+              border: UnderlineInputBorder(),
+              labelText: 'Search',
+            ),
+            onChanged: (value) => setState(() {
+              _searchTerm = value;
+            }),
+            onSubmitted: (value) => setState(() {
+              _searchTerm = value;
+              _typing = false;
+            }),
+          )
+        : const Text('Members');
+
     return Scaffold(
       floatingActionButton: button,
+      appBar: AppBar(
+        title: title,
+        actions: [
+          IconButton(
+            icon: Icon(_typing ? Icons.done : Icons.search),
+            tooltip: _typing ? "Close search box" : "Search",
+            onPressed: () {
+              setState(() {
+                _typing = !_typing;
+                _searchTerm = "";
+              });
+            },
+          ),
+        ],
+      ),
       body: FutureBuilder<List<Member>?>(
         future: _future,
         builder: (context, snapshot) {

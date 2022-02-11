@@ -18,6 +18,7 @@ class _CurrentFronterPageState extends State<CurrentFronterPage> {
   static final tsFormat = DateFormat.yMMMMEEEEd().add_jms();
 
   late Future<Front?> _future;
+  var _oneFronter = false;
 
   Widget _buildFrontList(Front front) {
     final duration = DateTime.now().difference(front.timestamp);
@@ -66,6 +67,9 @@ class _CurrentFronterPageState extends State<CurrentFronterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Current fronter${_oneFronter ? "" : "s"}'),
+      ),
       body: FutureBuilder<Front?>(
         future: _future,
         builder: (context, snapshot) {

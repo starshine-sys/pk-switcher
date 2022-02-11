@@ -63,9 +63,6 @@ class _PKSwitcherState extends State<PKSwitcher> {
             ],
           ),
         ),
-        appBar: AppBar(
-          title: const Text('PluralKit Switcher'),
-        ),
         body: TabBarView(
           children: [
             CurrentFronterPage(prefs: widget.prefs),

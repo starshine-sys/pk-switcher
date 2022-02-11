@@ -48,6 +48,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Settings'),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -195,7 +198,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 const ListTile(
                   title: Text('Version'),
-                  subtitle: Text('0.3.0'),
+                  subtitle: Text('0.4.0'),
                 ),
                 const Divider(),
                 ListTile(
